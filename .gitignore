@@ -17,6 +17,8 @@ desktop.ini
 # Build and temporary files
 build/
 dist/
+.eggs/
+venv/
 out/
 tmp/
 temp/
@@ -135,3 +137,7 @@ reports/
 *.bak
 *.orig
 *.swp
+
+.venv/
+venv/
+env/

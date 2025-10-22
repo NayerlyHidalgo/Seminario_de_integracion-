@@ -14,3 +14,8 @@ for i in range(empleados):
         mayor_salario = salario
         nombre_mayor = nombre
 print(f"Empleado con mayor salario: {nombre_mayor}, Salario: {mayor_salario}")
+
+
+   
+
+
