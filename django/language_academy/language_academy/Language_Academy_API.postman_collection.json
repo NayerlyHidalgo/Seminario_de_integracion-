@@ -1,0 +1,1048 @@
+{
+	"info": {
+		"_postman_id": "language-academy-api",
+		"name": "Language Academy API",
+		"description": "Colección de APIs para el sistema de Academia de Idiomas\n\nEndpoints para gestión de:\n- Autenticación JWT\n- Idiomas y Cursos\n- Usuarios y Profesores\n- Centros de Aprendizaje\n- Inscripciones y Pagos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('access_token', responseJson.access);",
+									"    pm.environment.set('refresh_token', responseJson.refresh);",
+									"    console.log('Tokens guardados exitosamente');",
+									"} else {",
+									"    console.log('Error en login:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('access_token', responseJson.access);",
+									"    console.log('Token actualizado exitosamente');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/refresh/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "refresh", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"nuevo_usuario\",\n    \"email\": \"nuevo@email.com\",\n    \"first_name\": \"Nuevo\",\n    \"last_name\": \"Usuario\",\n    \"password\": \"password123\",\n    \"password_confirm\": \"password123\",\n    \"role\": \"STUDENT\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/users/register/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "users", "register", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Languages",
+			"item": [
+				{
+					"name": "Get All Languages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/catalog/languages/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "catalog", "languages", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Language",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Portugués\",\n    \"code\": \"pt\",\n    \"slug\": \"portugues\",\n    \"flag_icon\": \"🇵🇹\",\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/catalog/languages/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "catalog", "languages", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Language by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/catalog/languages/{{language_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "catalog", "languages", "{{language_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Language",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Inglés Americano\",\n    \"code\": \"en\",\n    \"slug\": \"ingles-americano\",\n    \"flag_icon\": \"🇺🇸\",\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/catalog/languages/{{language_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "catalog", "languages", "{{language_id}}", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Courses",
+			"item": [
+				{
+					"name": "Get All Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/catalog/courses/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "catalog", "courses", ""],
+							"query": [
+								{
+									"key": "language",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "level",
+									"value": "BEGINNER",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "inglés",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Inglés Conversacional\",\n    \"slug\": \"ingles-conversacional\",\n    \"description\": \"Curso enfocado en mejorar las habilidades de conversación en inglés\",\n    \"level\": \"INTERMEDIATE\",\n    \"price\": 320000,\n    \"duration_weeks\": 14,\n    \"max_students\": 15,\n    \"language\": 1,\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/catalog/courses/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "catalog", "courses", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Course by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/catalog/courses/{{course_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "catalog", "courses", "{{course_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Courses by Language",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/catalog/courses/by_language/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "catalog", "courses", "by_language", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Popular Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/catalog/courses/popular/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "catalog", "courses", "popular", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Learning Centers",
+			"item": [
+				{
+					"name": "Get All Centers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/warehouses/centers/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "warehouses", "centers", ""],
+							"query": [
+								{
+									"key": "city",
+									"value": "Bogotá",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "principal",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Center",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"CTR004\",\n    \"name\": \"Centro Cali Norte\",\n    \"address\": \"Avenida 6 Norte # 25-30\",\n    \"city\": \"Cali\",\n    \"phone\": \"+57 2 234-5678\",\n    \"email\": \"cali@academiaidiomas.com\",\n    \"capacity\": 120,\n    \"classrooms\": 7,\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/warehouses/centers/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "warehouses", "centers", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Center by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/warehouses/centers/{{center_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "warehouses", "centers", "{{center_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Centers by City",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/warehouses/centers/by_city/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "warehouses", "centers", "by_city", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Center Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/warehouses/centers/{{center_id}}/statistics/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "warehouses", "centers", "{{center_id}}", "statistics", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users & Profiles",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/users/me/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "users", "me", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/users/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "users", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Profiles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/profiles/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "profiles", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+57 300 123-4567\",\n    \"birth_date\": \"1990-01-01\",\n    \"bio\": \"Estudiante de idiomas apasionado por aprender nuevas culturas\",\n    \"profile_picture\": \"https://example.com/avatar.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/profiles/{{profile_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "profiles", "{{profile_id}}", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Teachers",
+			"item": [
+				{
+					"name": "Get All Teachers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/teachers/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "teachers", ""],
+							"query": [
+								{
+									"key": "languages",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "is_available",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "María",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Teacher",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": 3,\n    \"languages\": [1, 2],\n    \"experience_years\": 3,\n    \"education\": \"Licenciatura en Idiomas\",\n    \"certifications\": \"TESOL\",\n    \"hourly_rate\": 40000,\n    \"is_available\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/teachers/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "teachers", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Teacher by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/teachers/{{teacher_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "teachers", "{{teacher_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Teachers by Language",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/teachers/by_language/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "teachers", "by_language", ""],
+							"query": [
+								{
+									"key": "language_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Available Teachers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/teachers/available/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "teachers", "available", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Enrollments",
+			"item": [
+				{
+					"name": "Get All Enrollments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/enrollments/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "enrollments", ""],
+							"query": [
+								{
+									"key": "status",
+									"value": "CONFIRMED",
+									"disabled": true
+								},
+								{
+									"key": "course",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "ENR-",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Enrollment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('enrollment_id', responseJson.id);",
+									"    console.log('Enrollment ID guardado:', responseJson.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"student\": 4,\n    \"course\": 1,\n    \"center\": 1,\n    \"start_date\": \"2024-01-15\",\n    \"end_date\": \"2024-04-15\",\n    \"total_amount\": 250000,\n    \"discount\": 0,\n    \"status\": \"PENDING\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/invoices/enrollments/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "enrollments", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Enrollment by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/enrollments/{{enrollment_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "enrollments", "{{enrollment_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "My Enrollments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/enrollments/my_enrollments/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "enrollments", "my_enrollments", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Enrollment Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/enrollments/statistics/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "enrollments", "statistics", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Enrollment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/enrollments/{{enrollment_id}}/confirm/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "enrollments", "{{enrollment_id}}", "confirm", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Enrollment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/enrollments/{{enrollment_id}}/cancel/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "enrollments", "{{enrollment_id}}", "cancel", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "Get All Payments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/payments/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "payments", ""],
+							"query": [
+								{
+									"key": "status",
+									"value": "APPROVED",
+									"disabled": true
+								},
+								{
+									"key": "method",
+									"value": "CARD",
+									"disabled": true
+								},
+								{
+									"key": "enrollment",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Payment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('payment_id', responseJson.id);",
+									"    console.log('Payment ID guardado:', responseJson.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"enrollment\": \"{{enrollment_id}}\",\n    \"amount\": 125000,\n    \"method\": \"CARD\",\n    \"reference\": \"TXN123456789\",\n    \"description\": \"Pago parcial del curso\",\n    \"payment_date\": \"2024-01-10T10:30:00Z\",\n    \"status\": \"PENDING\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/invoices/payments/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "payments", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payment by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/payments/{{payment_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "payments", "{{payment_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "My Payments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/payments/my_payments/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "payments", "my_payments", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Payment Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/payments/statistics/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "payments", "statistics", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/payments/{{payment_id}}/approve/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "payments", "{{payment_id}}", "approve", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/payments/{{payment_id}}/reject/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "payments", "{{payment_id}}", "reject", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-refresh token if needed",
+					"const accessToken = pm.environment.get('access_token');",
+					"const refreshToken = pm.environment.get('refresh_token');",
+					"",
+					"if (!accessToken && refreshToken) {",
+					"    console.log('Refreshing token...');",
+					"    pm.sendRequest({",
+					"        url: pm.environment.get('base_url') + '/api/auth/refresh/',",
+					"        method: 'POST',",
+					"        header: { 'Content-Type': 'application/json' },",
+					"        body: { mode: 'raw', raw: JSON.stringify({ refresh: refreshToken }) }",
+					"    }, (err, res) => {",
+					"        if (res && res.code === 200) {",
+					"            const responseJson = res.json();",
+					"            pm.environment.set('access_token', responseJson.access);",
+					"        }",
+					"    });",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script",
+					"if (pm.response.code === 401) {",
+					"    console.log('Token expirado. Necesita hacer login nuevamente.');",
+					"}",
+					"",
+					"if (pm.response.code >= 200 && pm.response.code < 300) {",
+					"    console.log('✅ Respuesta exitosa:', pm.response.code);",
+					"} else {",
+					"    console.log('❌ Error en la respuesta:', pm.response.code, pm.response.text());",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}

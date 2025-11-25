@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Certificado de Inscripción - {{ enrollment.enrollment_number }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .content {
+            margin: 20px 0;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .info-table th, .info-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .info-table th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Academia de Idiomas</h1>
+        <h2>Certificado de Inscripción</h2>
+    </div>
+
+    <div class="content">
+        <p><strong>Número de Inscripción:</strong> {{ enrollment.enrollment_number }}</p>
+        <p><strong>Fecha de Emisión:</strong> {{ enrollment.created_at|date:"d/m/Y" }}</p>
+
+        <table class="info-table">
+            <tr>
+                <th>Estudiante</th>
+                <td>{{ enrollment.student.get_full_name }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ enrollment.student.email }}</td>
+            </tr>
+            <tr>
+                <th>Curso</th>
+                <td>{{ enrollment.course.name }}</td>
+            </tr>
+            <tr>
+                <th>Idioma</th>
+                <td>{{ enrollment.course.language.name }}</td>
+            </tr>
+            <tr>
+                <th>Nivel</th>
+                <td>{{ enrollment.course.get_level_display }}</td>
+            </tr>
+            <tr>
+                <th>Centro de Estudios</th>
+                <td>{{ enrollment.center.name }}</td>
+            </tr>
+            <tr>
+                <th>Fecha de Inicio</th>
+                <td>{{ enrollment.start_date|date:"d/m/Y" }}</td>
+            </tr>
+            <tr>
+                <th>Fecha de Finalización</th>
+                <td>{{ enrollment.end_date|date:"d/m/Y" }}</td>
+            </tr>
+            <tr>
+                <th>Duración</th>
+                <td>{{ enrollment.course.duration_weeks }} semanas</td>
+            </tr>
+            <tr>
+                <th>Monto Total</th>
+                <td>${{ enrollment.total_amount }}</td>
+            </tr>
+            <tr>
+                <th>Estado</th>
+                <td>{{ enrollment.get_status_display }}</td>
+            </tr>
+        </table>
+
+        {% if enrollment.grade %}
+        <p><strong>Calificación Final:</strong> {{ enrollment.grade }}</p>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        <p>Este documento certifica la inscripción del estudiante en el curso mencionado.</p>
+        <p>Academia de Idiomas - {{ enrollment.center.address }}</p>
+    </div>
+</body>
+</html>
