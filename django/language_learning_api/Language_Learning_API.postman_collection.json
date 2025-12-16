@@ -1,0 +1,890 @@
+{
+	"info": {
+		"_postman_id": "language-learning-api-collection",
+		"name": "Language Learning API",
+		"description": "Complete API collection for the Language Learning Platform",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "language-learning-dev"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "course_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "lesson_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "exercise_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', response.access);",
+									"    pm.collectionVariables.set('refresh_token', response.refresh);",
+									"    pm.collectionVariables.set('user_id', response.user.id);",
+									"    pm.test('User registered successfully', () => {",
+									"        pm.expect(response).to.have.property('message');",
+									"        pm.expect(response).to.have.property('access');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"testuser@example.com\",\n    \"password\": \"securepassword123\",\n    \"password_confirm\": \"securepassword123\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register", ""]
+						}
+					}
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', response.access);",
+									"    pm.collectionVariables.set('refresh_token', response.refresh);",
+									"    pm.collectionVariables.set('user_id', response.user.id);",
+									"    pm.test('Login successful', () => {",
+									"        pm.expect(response).to.have.property('access');",
+									"        pm.expect(response).to.have.property('refresh');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"securepassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login", ""]
+						}
+					}
+				},
+				{
+					"name": "Logout User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/logout/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "logout", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "User Profile",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["profile", ""]
+						}
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"native_language\": \"english\",\n    \"target_languages\": [\"spanish\", \"french\"],\n    \"current_level\": \"intermediate\",\n    \"bio\": \"Language learning enthusiast\",\n    \"country\": \"United States\",\n    \"daily_goal_minutes\": 30\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["profile", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Languages",
+			"item": [
+				{
+					"name": "Get All Languages",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response is OK', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has results', () => {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('results');",
+									"    pm.expect(response.results).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/languages/",
+							"host": ["{{base_url}}"],
+							"path": ["languages", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Language by ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/languages/1/",
+							"host": ["{{base_url}}"],
+							"path": ["languages", "1", ""]
+						}
+					}
+				},
+				{
+					"name": "Search Languages",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/languages/?search=spanish",
+							"host": ["{{base_url}}"],
+							"path": ["languages", ""],
+							"query": [
+								{
+									"key": "search",
+									"value": "spanish"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Filter by Difficulty",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/languages/?difficulty=2",
+							"host": ["{{base_url}}"],
+							"path": ["languages", ""],
+							"query": [
+								{
+									"key": "difficulty",
+									"value": "2"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Popular Languages",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/languages/popular/",
+							"host": ["{{base_url}}"],
+							"path": ["languages", "popular", ""]
+						}
+					}
+				},
+				{
+					"name": "Easy Languages",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/languages/easy/",
+							"host": ["{{base_url}}"],
+							"path": ["languages", "easy", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Courses",
+			"item": [
+				{
+					"name": "Get All Courses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.results && response.results.length > 0) {",
+									"        pm.collectionVariables.set('course_id', response.results[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/courses/",
+							"host": ["{{base_url}}"],
+							"path": ["courses", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Course by ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/courses/{{course_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["courses", "{{course_id}}", ""]
+						}
+					}
+				},
+				{
+					"name": "Create Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Advanced Spanish Conversation\",\n    \"short_description\": \"Improve your Spanish speaking skills\",\n    \"description\": \"This course focuses on advanced Spanish conversation techniques and real-world scenarios.\",\n    \"language_id\": 1,\n    \"difficulty_level\": \"advanced\",\n    \"estimated_duration_hours\": 30,\n    \"price\": 79.99,\n    \"is_free\": false,\n    \"what_you_will_learn\": [\n        \"Advanced conversation techniques\",\n        \"Business Spanish\",\n        \"Cultural nuances\",\n        \"Idiomatic expressions\"\n    ],\n    \"prerequisites\": [\n        \"Intermediate Spanish level\",\n        \"B1-B2 proficiency\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/courses/",
+							"host": ["{{base_url}}"],
+							"path": ["courses", ""]
+						}
+					}
+				},
+				{
+					"name": "Update Course",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"is_published\": true,\n    \"is_featured\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/courses/{{course_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["courses", "{{course_id}}", ""]
+						}
+					}
+				},
+				{
+					"name": "Enroll in Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/courses/{{course_id}}/enroll/",
+							"host": ["{{base_url}}"],
+							"path": ["courses", "{{course_id}}", "enroll", ""]
+						}
+					}
+				},
+				{
+					"name": "Unenroll from Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/courses/{{course_id}}/unenroll/",
+							"host": ["{{base_url}}"],
+							"path": ["courses", "{{course_id}}", "unenroll", ""]
+						}
+					}
+				},
+				{
+					"name": "Featured Courses",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/courses/featured/",
+							"host": ["{{base_url}}"],
+							"path": ["courses", "featured", ""]
+						}
+					}
+				},
+				{
+					"name": "Popular Courses",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/courses/popular/",
+							"host": ["{{base_url}}"],
+							"path": ["courses", "popular", ""]
+						}
+					}
+				},
+				{
+					"name": "My Courses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/courses/my_courses/",
+							"host": ["{{base_url}}"],
+							"path": ["courses", "my_courses", ""]
+						}
+					}
+				},
+				{
+					"name": "Filter Courses",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/courses/?language=es&difficulty=beginner&is_free=true",
+							"host": ["{{base_url}}"],
+							"path": ["courses", ""],
+							"query": [
+								{
+									"key": "language",
+									"value": "es"
+								},
+								{
+									"key": "difficulty",
+									"value": "beginner"
+								},
+								{
+									"key": "is_free",
+									"value": "true"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Enrollments",
+			"item": [
+				{
+					"name": "Get My Enrollments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/enrollments/",
+							"host": ["{{base_url}}"],
+							"path": ["enrollments", ""]
+						}
+					}
+				},
+				{
+					"name": "Create Enrollment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course_id\": {{course_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/enrollments/",
+							"host": ["{{base_url}}"],
+							"path": ["enrollments", ""]
+						}
+					}
+				},
+				{
+					"name": "Active Enrollments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/enrollments/active/",
+							"host": ["{{base_url}}"],
+							"path": ["enrollments", "active", ""]
+						}
+					}
+				},
+				{
+					"name": "Completed Enrollments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/enrollments/completed/",
+							"host": ["{{base_url}}"],
+							"path": ["enrollments", "completed", ""]
+						}
+					}
+				},
+				{
+					"name": "Mark Lesson Complete",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/enrollments/1/mark_lesson_complete/",
+							"host": ["{{base_url}}"],
+							"path": ["enrollments", "1", "mark_lesson_complete", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Enrollment Progress",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/enrollments/1/progress/",
+							"host": ["{{base_url}}"],
+							"path": ["enrollments", "1", "progress", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Lessons",
+			"item": [
+				{
+					"name": "Get All Lessons",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.results && response.results.length > 0) {",
+									"        pm.collectionVariables.set('lesson_id', response.results[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/lessons/",
+							"host": ["{{base_url}}"],
+							"path": ["lessons", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Lesson by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/lessons/{{lesson_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["lessons", "{{lesson_id}}", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Lessons by Course",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/lessons/?course={{course_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["lessons", ""],
+							"query": [
+								{
+									"key": "course",
+									"value": "{{course_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Lesson",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course\": {{course_id}},\n    \"title\": \"Numbers in Spanish\",\n    \"slug\": \"numbers-spanish\",\n    \"description\": \"Learn numbers from 1 to 100 in Spanish\",\n    \"lesson_type\": \"interactive\",\n    \"order\": 4,\n    \"content\": \"In this lesson, we will learn how to count from 1 to 100 in Spanish.\",\n    \"estimated_duration_minutes\": 25,\n    \"is_published\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/lessons/",
+							"host": ["{{base_url}}"],
+							"path": ["lessons", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Exercises",
+			"item": [
+				{
+					"name": "Get All Exercises",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.results && response.results.length > 0) {",
+									"        pm.collectionVariables.set('exercise_id', response.results[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/exercises/",
+							"host": ["{{base_url}}"],
+							"path": ["exercises", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Exercise by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/exercises/{{exercise_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["exercises", "{{exercise_id}}", ""]
+						}
+					}
+				},
+				{
+					"name": "Submit Exercise Answer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"answer\": \"Buenos días\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/exercises/{{exercise_id}}/submit/",
+							"host": ["{{base_url}}"],
+							"path": ["exercises", "{{exercise_id}}", "submit", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Exercise Attempts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/exercise-attempts/",
+							"host": ["{{base_url}}"],
+							"path": ["exercise-attempts", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Progress",
+			"item": [
+				{
+					"name": "Get My Progress",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/progress/",
+							"host": ["{{base_url}}"],
+							"path": ["progress", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Progress Summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/progress/summary/",
+							"host": ["{{base_url}}"],
+							"path": ["progress", "summary", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Subscriptions",
+			"item": [
+				{
+					"name": "Get My Subscriptions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/",
+							"host": ["{{base_url}}"],
+							"path": ["subscriptions", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Current Subscription",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/current/",
+							"host": ["{{base_url}}"],
+							"path": ["subscriptions", "current", ""]
+						}
+					}
+				},
+				{
+					"name": "Create Subscription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subscription_type\": \"monthly\",\n    \"expires_at\": \"2025-12-24T23:59:59Z\",\n    \"auto_renewal\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions/",
+							"host": ["{{base_url}}"],
+							"path": ["subscriptions", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Payment History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/payments/",
+							"host": ["{{base_url}}"],
+							"path": ["payments", ""]
+						}
+					}
+				}
+			]
+		}
+	]
+}
