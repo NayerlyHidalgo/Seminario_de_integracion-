@@ -122,6 +122,7 @@ class CourseAPITestCase(TestCase):
             language=self.language,
             instructor=self.instructor,
             is_published=True
+            estimated_duration_hours=10
         )
 
     def test_course_list_unauthorized(self):
