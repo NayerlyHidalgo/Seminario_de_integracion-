@@ -42,7 +42,7 @@ jobs:
       - name: Run tests
         env:
           # 🟢 FIX 2: Coincide con la contraseña definida en 'services' arriba
-          DATABASE_URL: postgres://postgres:billing_pass_123@localhost:5432/postgres
+          DATABASE_URL: postgres://idiomas_user:billing_pass_123@localhost:5432/db_idiomas
           SECRET_KEY: test-secret-key
         run: |
           # 🟢 FIX 3: Entra en la carpeta antes de ejecutar manage.py
