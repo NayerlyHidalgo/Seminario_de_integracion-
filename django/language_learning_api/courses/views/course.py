@@ -1,4 +1,3 @@
-# courses/views/course.py
 from rest_framework import viewsets, filters, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -29,8 +28,9 @@ class CoursePermission(permissions.BasePermission):
 
 class CourseViewSet(viewsets.ModelViewSet):
     """ViewSet for managing courses"""
+    # 🟢 FIX 1: Renamed 'enrollment_count' to 'active_enrollments_count' to avoid Model property conflict
     queryset = Course.objects.select_related('language', 'instructor').annotate(
-        enrollment_count=Count('enrollments', filter=Q(enrollments__is_active=True))
+        active_enrollments_count=Count('enrollments', filter=Q(enrollments__is_active=True))
     )
     permission_classes = [CoursePermission]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
@@ -99,7 +99,8 @@ class CourseViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def popular(self, request):
         """Get popular courses by enrollment count"""
-        courses = self.get_queryset().order_by('-enrollment_count')[:10]
+        # 🟢 FIX 2: Updated ordering to use the new annotation name
+        courses = self.get_queryset().order_by('-active_enrollments_count')[:10]
         serializer = self.get_serializer(courses, many=True)
         return Response(serializer.data)
 
