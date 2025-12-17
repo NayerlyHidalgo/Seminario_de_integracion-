@@ -14,6 +14,8 @@ jobs:
       postgres:
         image: postgres:13
         env:
+          POSTGRES_DB: db_idiomas
+          POSTGRES_USER: idiomas_user
           POSTGRES_PASSWORD: billing_pass_123
         options: >-
           --health-cmd pg_isready
