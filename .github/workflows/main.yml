@@ -9,11 +9,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-   
+    
     services:
       postgres:
         image: postgres:13
         env:
+          POSTGRES_DB: db_idiomas
+          POSTGRES_USER: idiomas_user
           POSTGRES_PASSWORD: billing_pass_123
         options: >-
           --health-cmd pg_isready
@@ -22,76 +24,85 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-   
+    
     steps:
-    - uses: actions/checkout@v4
-   
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-   
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-   
-    - name: Run tests
-      env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-        SECRET_KEY: test-secret-key
-      run: |
-        python manage.py test
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # 🟢 FIX 1: Usa la ruta relativa dentro del repositorio
+          pip install -r django/language_learning_api/requirements.txt
+      
+      - name: Run tests
+        env:
+          # 🟢 FIX 2: Coincide con la contraseña definida en 'services' arriba
+          DATABASE_URL: postgres://postgres:billing_pass_123@localhost:5432/postgres
+          SECRET_KEY: test-secret-key
+        run: |
+          # 🟢 FIX 3: Entra en la carpeta antes de ejecutar manage.py
+          cd django/language_learning_api
+          python manage.py test
 
   deploy:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-   
+    
     steps:
-    - uses: actions/checkout@v4
-   
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-       
-        # Añadir el host a known_hosts
-        ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-   
-    - name: Deploy to VPS
-      env:
-        VPS_HOST: ${{ secrets.VPS_HOST }}
-        VPS_USER: ${{ secrets.VPS_USERNAME }}
-        DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-        PROJECT_PATH: ${{ secrets.PROJECT_PATH }}
-        VENV_PATH: ${{ secrets.VENV_PATH }}
-      run: |
-        # Comandos SSH para desplegar
-        ssh $VPS_USER@$VPS_HOST "
-          set -e
-         
-          echo '1. Actualizando código...'
-          cd $PROJECT_PATH
-          git fetch origin
-          git reset --hard origin/main
-         
-          echo '2. Activando entorno virtual...'
-          source $VENV_PATH/bin/activate
-         
-          echo '3. Instalando dependencias...'
-          pip install -r requirements.txt
-         
-          echo '4. Aplicando migraciones...'
-          python manage.py migrate --noinput
-         
-          echo '5. Colectando archivos estáticos...'
-          python manage.py collectstatic --noinput --clear
-         
-          echo '6. Reiniciando servicios...'
-          systemctl restart gunicorn || true
-          systemctl restart nginx || true
-         
-          echo '✅ Despliegue completado'
-        "
+      - uses: actions/checkout@v4
+      
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          # Añadir el host a known_hosts
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+      
+      - name: Deploy to VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USERNAME }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          PROJECT_PATH: ${{ secrets.PROJECT_PATH }}
+          VENV_PATH: ${{ secrets.VENV_PATH }}
+        run: |
+          # Comandos SSH para desplegar
+          ssh $VPS_USER@$VPS_HOST "
+            set -e
+            
+            echo '1. Actualizando código...'
+            cd $PROJECT_PATH
+            git fetch origin
+            git reset --hard origin/main
+            
+            echo '2. Activando entorno virtual...'
+            source $VENV_PATH/bin/activate
+            
+            echo '3. Entrando al directorio del proyecto...'
+            # 🟢 FIX CRÍTICO: Entrar a la subcarpeta correcta en el servidor también
+            cd django/language_learning_api
+            
+            echo '4. Instalando dependencias...'
+            pip install -r requirements.txt
+            
+            echo '5. Aplicando migraciones...'
+            python manage.py migrate --noinput
+            
+            echo '6. Colectando archivos estáticos...'
+            python manage.py collectstatic --noinput --clear
+            
+            echo '7. Reiniciando servicios...'
+            # 🟢 FIX: Usar el nombre correcto de tu servicio systemd
+            systemctl restart gunicorn-idiomas || true
+            systemctl restart nginx || true
+            
+            echo '✅ Despliegue completado'
+          "
