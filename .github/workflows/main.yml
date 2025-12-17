@@ -35,7 +35,9 @@ jobs:
       
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          # 👇 UPDATE: Add 'setuptools' here
+          python -m pip install --upgrade pip setuptools
+          
           # 🟢 FIX 1: Usa la ruta relativa dentro del repositorio
           pip install -r django/language_learning_api/requirements.txt
       
