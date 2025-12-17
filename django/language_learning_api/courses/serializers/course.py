@@ -9,7 +9,7 @@ class CourseSerializer(serializers.ModelSerializer):
     language = LanguageSerializer(read_only=True)
     language_id = serializers.IntegerField(write_only=True)
     instructor_name = serializers.CharField(source='instructor.get_full_name', read_only=True)
-    enrollment_count = serializers.IntegerField(read_only=True)
+    enrollment_count = serializers.IntegerField(source='active_enrollments_count', read_only=True)
     average_rating = serializers.FloatField(read_only=True)
     
     class Meta:
@@ -29,7 +29,7 @@ class CourseDetailSerializer(serializers.ModelSerializer):
     language_id = serializers.IntegerField(write_only=True)
     instructor_name = serializers.CharField(source='instructor.get_full_name', read_only=True)
     instructor_username = serializers.CharField(source='instructor.username', read_only=True)
-    enrollment_count = serializers.IntegerField(read_only=True)
+    enrollment_count = serializers.IntegerField(source='active_enrollments_count', read_only=True)
     average_rating = serializers.FloatField(read_only=True)
     is_enrolled = serializers.SerializerMethodField()
     
