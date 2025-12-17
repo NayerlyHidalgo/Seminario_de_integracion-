@@ -1,11 +1,9 @@
-# courses/tests.py
 from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from rest_framework import status
 from languages.models import Language
 from courses.models import Course, Enrollment
-
 
 class CourseModelTestCase(TestCase):
     def setUp(self):
@@ -27,7 +25,8 @@ class CourseModelTestCase(TestCase):
             language=self.language,
             instructor=self.user,
             difficulty_level='beginner',
-            is_published=True
+            is_published=True,
+            estimated_duration_hours=10  # 🟢 FIX: Added required field
         )
 
     def test_course_creation(self):
@@ -63,7 +62,8 @@ class EnrollmentModelTestCase(TestCase):
             language=self.language,
             instructor=self.instructor,
             total_lessons=10,
-            is_published=True
+            is_published=True,
+            estimated_duration_hours=10  # 🟢 FIX: Added required field
         )
 
     def test_enrollment_creation(self):
@@ -121,8 +121,8 @@ class CourseAPITestCase(TestCase):
             description='Learn Spanish from scratch',
             language=self.language,
             instructor=self.instructor,
-            is_published=True
-            estimated_duration_hours=10
+            is_published=True,           # 🟢 FIX: Added Comma
+            estimated_duration_hours=10  # 🟢 FIX: Added required field
         )
 
     def test_course_list_unauthorized(self):
