@@ -81,6 +81,7 @@ jobs:
             set -e
             
             echo '1. Actualizando código...'
+            git config --global --add safe.directory $PROJECT_PATH
             cd $PROJECT_PATH
             git fetch origin
             git reset --hard origin/main
