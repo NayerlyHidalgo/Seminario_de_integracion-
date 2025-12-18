@@ -15,7 +15,8 @@ class LessonModelTestCase(TestCase):
             slug='spanish-basics',
             description='Learn Spanish basics',
             language=self.language,
-            instructor=self.user
+            instructor=self.user,
+            estimated_duration_hours=10  # 🟢 FIX: Added required field
         )
     
     def test_lesson_creation(self):

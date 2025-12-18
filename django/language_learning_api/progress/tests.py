@@ -16,7 +16,8 @@ class ProgressTestCase(TestCase):
             slug='spanish-basics',
             description='Learn Spanish basics',
             language=self.language,
-            instructor=self.instructor
+            instructor=self.instructor,
+            estimated_duration_hours=10  # 🟢 FIX: Added required field
         )
 
     def test_progress_creation(self):

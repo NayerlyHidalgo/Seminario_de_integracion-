@@ -159,6 +159,8 @@ class CourseAPITestCase(TestCase):
 
     def test_featured_courses(self):
         """Test featured courses endpoint"""
+        self.client.force_authenticate(user=self.student)  # 🟢 FIX: Added authentication
+        
         self.course.is_featured = True
         self.course.save()
         

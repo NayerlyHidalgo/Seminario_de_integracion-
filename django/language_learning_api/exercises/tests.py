@@ -17,7 +17,8 @@ class ExerciseTestCase(TestCase):
             slug='spanish-basics',
             description='Learn Spanish basics',
             language=self.language,
-            instructor=self.instructor
+            instructor=self.instructor,
+            estimated_duration_hours=10  # 🟢 FIX: Added required field
         )
         self.lesson = Lesson.objects.create(
             course=self.course,
