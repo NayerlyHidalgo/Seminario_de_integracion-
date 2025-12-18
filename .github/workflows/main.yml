@@ -35,19 +35,15 @@ jobs:
       
       - name: Install dependencies
         run: |
-          # 👇 UPDATE: Add 'setuptools' here
           python -m pip install --upgrade pip setuptools
-          
-          # 🟢 FIX 1: Usa la ruta relativa dentro del repositorio
+          # Ajusta la ruta si requirements.txt está en la subcarpeta
           pip install -r django/language_learning_api/requirements.txt
       
       - name: Run tests
         env:
-          # 🟢 FIX 2: Coincide con la contraseña definida en 'services' arriba
           DATABASE_URL: postgres://idiomas_user:billing_pass_123@localhost:5432/db_idiomas
           SECRET_KEY: test-secret-key
         run: |
-          # 🟢 FIX 3: Entra en la carpeta antes de ejecutar manage.py
           cd django/language_learning_api
           python manage.py test
 
@@ -64,48 +60,46 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          
-          # Añadir el host a known_hosts
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
       
       - name: Deploy to VPS
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USERNAME }}
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          # PROJECT_PATH debe ser la raíz donde está la carpeta .git
           PROJECT_PATH: ${{ secrets.PROJECT_PATH }}
           VENV_PATH: ${{ secrets.VENV_PATH }}
         run: |
-          # Comandos SSH para desplegar
           ssh $VPS_USER@$VPS_HOST "
             set -e
             
-            echo '1. Actualizando código...'
+            echo '1. Configurando seguridad de Git...'
+            # ESTA LÍNEA SOLUCIONA EL ERROR 'exit code 128' / 'dubious ownership'
             git config --global --add safe.directory $PROJECT_PATH
+            
+            echo '2. Actualizando código...'
             cd $PROJECT_PATH
             git fetch origin
             git reset --hard origin/main
             
-            echo '2. Activando entorno virtual...'
+            echo '3. Activando entorno virtual...'
             source $VENV_PATH/bin/activate
             
-            echo '3. Entrando al directorio del proyecto...'
-            # 🟢 FIX CRÍTICO: Entrar a la subcarpeta correcta en el servidor también
+            echo '4. Entrando a la carpeta del proyecto Django...'
+            # Navegamos desde la raíz del repo hacia donde está manage.py
             cd django/language_learning_api
             
-            echo '4. Instalando dependencias...'
+            echo '5. Instalando dependencias...'
             pip install -r requirements.txt
             
-            echo '5. Aplicando migraciones...'
+            echo '6. Aplicando migraciones y estáticos...'
             python manage.py migrate --noinput
-            
-            echo '6. Colectando archivos estáticos...'
             python manage.py collectstatic --noinput --clear
             
             echo '7. Reiniciando servicios...'
-            # 🟢 FIX: Usar el nombre correcto de tu servicio systemd
-            systemctl restart gunicorn-idiomas || true
-            systemctl restart nginx || true
+            # Usamos sudo porque reiniciar servicios requiere privilegios
+            sudo systemctl restart gunicorn-idiomas
+            sudo systemctl restart nginx
             
-            echo '✅ Despliegue completado'
+            echo '✅ Despliegue completado con éxito.'
           "
